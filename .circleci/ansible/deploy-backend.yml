@@ -1,0 +1,45 @@
+---
+- name: "configuration play." 
+  hosts: web
+  user: ubuntu
+  become: true
+  become_method: sudo
+  become_user: root
+  gather_facts: false
+  vars:
+    - ansible_python_interpreter: /usr/bin/python3
+    - ansible_host_key_checking: false
+    - ansible_stdout_callback: yaml
+
+  pre_tasks:
+    - name: create the kube user account
+      user: name=kube append=yes state=present createhome=yes shell=/bin/bash
+
+    - name: allow 'kube' to use sudo without needing a password
+      lineinfile:
+        dest: /etc/sudoers
+        line: 'kube ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: Check for Python
+      raw: test -e "{{ ansible_python_interpreter }}"
+      changed_when: "{{ ansible_host_key_checking }}"
+      failed_when: "{{ ansible_host_key_checking }}"
+      register: check_python
+    - name: install python for Ansible.
+      raw: apt -y update && apt install -y python-minimal
+      when: check_python.rc != 0
+  # environment:
+  #   - TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION')}}"  
+  #   - TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION')}}"
+  #   - TYPEORM_ENTITIES: "{{ lookup('env', 'TYPEORM_ENTITIES')}}"
+  #   - TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST')}}"
+  #   - TYPEORM_PORT: 5432
+  #   - TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME')}}"
+  #   - TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD')}}"
+  #   - TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE')}}"
+  #   - TYPEORM_MIGRATIONS: "{{ lookup('env', 'TYPEORM_MIGRATIONS')}}"
+  #   - TYPEORM_MIGRATIONS_DIR: "{{ lookup('env', 'TYPEORM_MIGRATIONS_DIR')}}"
+  # roles: [deploy, configure-node-exporter]
+  roles: [deploy]
+  # roles: [configure-prometheus]

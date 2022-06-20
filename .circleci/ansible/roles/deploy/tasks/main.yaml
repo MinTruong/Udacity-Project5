@@ -1,0 +1,39 @@
+- name: "install depencies"
+  become: true
+  apt:
+    name: tar
+    state: latest
+    update_cache: true
+
+
+- name: Create containerd config file
+  file:
+    path: "/etc/modules-load.d/containerd.conf"
+    state: "touch"
+
+- name: create directory for store app code
+  become: true
+  file: 
+    path: /home/ubuntu/app
+    state: directory
+    mode: 0755
+
+- name: copy artifact from circle CI MC to backend sever EC2 and save to app directory
+  become: true
+  copy: 
+    src: ~/project/artifact.tar.gz
+    dest: /home/ubuntu/app/artifact.tar.gz
+
+- name: unzip
+  become: true
+  shell: |
+    cd /home/ubuntu/app
+    tar -vxf artifact.tar.gz
+
+- name: build and start node
+  become: true
+  shell: |
+    cd /home/ubuntu/app
+    npm install
+    pm2 stop default
+    pm2 start npm -- start
