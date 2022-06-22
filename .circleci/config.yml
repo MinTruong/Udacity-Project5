@@ -118,9 +118,8 @@ jobs:
   
   build-docker-image:
     docker:
-      - image: 
-          - cimg/go:1.17
-          - amazon/aws-cli
+      - image: cimg/go:1.17
+      - image: amazon/aws-cli 
     working_directory: ~/repo
     steps:
       - checkout
