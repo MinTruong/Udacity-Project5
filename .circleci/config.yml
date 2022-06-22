@@ -180,8 +180,19 @@ jobs:
           command: |
             #pull image
             docker push $AWS_ECR/project5:latest
+  
+  deploy:
+    docker:
+      - image: cimg/base:stable-20.04
+    steps:
+      - run:
+          name: Install dependencies
+          command: |
+            echo $HOME
+            
           
 workflows:
   default:
     jobs:
-      - build-docker-image
+      # - build-docker-image
+      - deploy
