@@ -175,7 +175,7 @@ jobs:
             docker tag project5:latest $AWS_ECR/project5:latest
             docker images
 
-      -run:
+      - run:
           name: push-image
           command: |
             #pull image
