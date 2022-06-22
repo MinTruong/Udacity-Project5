@@ -132,7 +132,18 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            echo $AWS_ECR
+            docker build -t project5
+            docker tag project5:latest $AWS_ECR/project5:latest
             docker images
+
+            #login ECR
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 657224673055.dkr.ecr.us-east-1.amazonaws.com
+
+            #pull image
+
+            docker push $AWS_ECR/project4:latest
+
     
 workflows:
   default:
