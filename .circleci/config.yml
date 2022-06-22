@@ -99,7 +99,6 @@ jobs:
             . project5/bin/activate
             make lint 
             ls -la
-  
 workflows:
   default:
     jobs:
