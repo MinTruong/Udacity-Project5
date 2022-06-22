@@ -118,7 +118,7 @@ jobs:
   
   build-docker-image:
     docker:
-      - image: circleci/cci-demo-docker-primary:0.0.1
+      - image: docker:17.05.0-ce-git
     working_directory: ~/repo
     steps:
       - checkout
@@ -127,9 +127,14 @@ jobs:
             - v1-dependencies-{{ checksum "requirements.txt" }}
             - v1-dependencies-
       - run:
-          name: build-docker-image
+          name: Install dependencies
           command: |
-            ls -la
+            apk add --no-cache \
+              py-pip=9.0.0-r1
+            pip install \
+              docker-compose==1.12.0 \
+              awscli==1.11.76
+            
             docker images
     
 workflows:
