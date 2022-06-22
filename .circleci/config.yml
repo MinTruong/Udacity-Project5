@@ -100,21 +100,21 @@ jobs:
       #       . project5/bin/activate
       #       make lint 
       #       ls -la
-      - run:
-          name: update
-          command: |
-            apt -y update
-            apt -y install apt-transport-https ca-certificates curl software-properties-common
-            systemctl status docker
-            docker images
-      - run:
-          name: Install docker
-          command: |
-            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-            add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
-            apt-cache policy docker-ce
-            apt -y update
-            apt -y install docker-ce
+      # - run:
+      #     name: update
+      #     command: |
+      #       apt -y update
+      #       apt -y install apt-transport-https ca-certificates curl software-properties-common
+      #       systemctl status docker
+      #       docker images
+      # - run:
+      #     name: Install docker
+      #     command: |
+      #       curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+      #       add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+      #       apt-cache policy docker-ce
+      #       apt -y update
+      #       apt -y install docker-ce
   
   build-docker-image:
     docker:
@@ -124,13 +124,14 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "requirements.txt" }}
-          - v1-dependencies-
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            - v1-dependencies-
       - run:
-        command: |
-          ls la
-          docker images
-  
+          name: build-docker-image
+          command: |
+            ls la
+            docker images
+    
 workflows:
   default:
     jobs:
