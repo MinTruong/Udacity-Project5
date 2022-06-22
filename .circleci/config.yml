@@ -97,10 +97,9 @@ jobs:
       - run:
           name: run lint
           command: |
-            . venv/bin/activate
+            . projec5/bin/activate
             make lint 
   
-    
 workflows:
   default:
     jobs:
