@@ -116,9 +116,37 @@ jobs:
       #       apt -y update
       #       apt -y install docker-ce
   
+  # build-docker-image:
+  #   docker:
+  #     - image: cimg/go:1.17
+  #   working_directory: ~/repo
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys:
+  #           - v1-dependencies-{{ checksum "requirements.txt" }}
+  #           - v1-dependencies-
+  #     - setup_remote_docker:
+  #         version: 20.10.14
+  #         docker_layer_caching: true
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           echo $AWS_ECR
+  #           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 657224673055.dkr.ecr.us-east-1.amazonaws.com
+  #           docker build -t project5 .
+  #           docker tag project5:latest $AWS_ECR/project5:latest
+  #           docker images
+
+  #           #login ECR
+
+  #           #pull image
+
+  #           docker push $AWS_ECR/project4:latest
+
   build-docker-image:
     docker:
-      - image: cimg/go:1.17
+      - image: cimg/base:stable-20.04 
     working_directory: ~/repo
     steps:
       - checkout
@@ -132,18 +160,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            hostnamectl
-            echo $AWS_ECR
-            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 657224673055.dkr.ecr.us-east-1.amazonaws.com
-            docker build -t project5 .
-            docker tag project5:latest $AWS_ECR/project5:latest
-            docker images
-
-            #login ECR
-
-            #pull image
-
-            docker push $AWS_ECR/project4:latest
+            sudo apt-get update && sudo apt-get install -y
+            sudo apt-get install -y curl unzip
 
     
 workflows:
