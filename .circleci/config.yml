@@ -118,7 +118,9 @@ jobs:
   
   build-docker-image:
     docker:
-      - image: cimg/go:1.17
+      - image: 
+          - cimg/go:1.17
+          - amazon/aws-cli
     working_directory: ~/repo
     steps:
       - checkout
@@ -133,12 +135,12 @@ jobs:
           name: Install dependencies
           command: |
             echo $AWS_ECR
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 657224673055.dkr.ecr.us-east-1.amazonaws.com
             docker build -t project5 .
             docker tag project5:latest $AWS_ECR/project5:latest
             docker images
 
             #login ECR
-            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 657224673055.dkr.ecr.us-east-1.amazonaws.com
 
             #pull image
 
