@@ -154,9 +154,9 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "requirements.txt" }}
             - v1-dependencies-
-      - setup_remote_docker:
-          version: 20.10.14
-          docker_layer_caching: true
+      # - setup_remote_docker:
+      #     version: 20.10.14
+      #     docker_layer_caching: true
       - run:
           name: Install dependencies
           command: |
@@ -165,11 +165,11 @@ jobs:
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             sudo ./aws/install
-            
+
       - run:
           name: build-image
           command: |
-            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 657224673055.dkr.ecr.us-east-1.amazonaws.com
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $AWS_ECR
             docker build -t project5 .
             docker tag project5:latest $AWS_ECR/project5:latest
             docker images
@@ -178,7 +178,7 @@ jobs:
 
             #pull image
 
-            docker push $AWS_ECR/project4:latest
+            docker push $AWS_ECR/project5:latest
           
 
     
