@@ -39,10 +39,9 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
 
 Outputs:
-
-EksClusterRoleArn:
-  Description: Role EKS arn
-  Value: !GetAtt EksClusterRole.Arn
-  Export:
-    Name: EksClusterRoleArn
+  EksClusterRoleArn:
+    Description: Role EKS arn
+    Value: !GetAtt EksClusterRole.Arn
+    Export:
+      Name: EksClusterRoleArn
 
