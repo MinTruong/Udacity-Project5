@@ -183,10 +183,10 @@ jobs:
 
   deploy-infrastructure:
     docker:
-      - checkout
-      - working_directory: ~/repo
       - image: cimg/base:stable-20.04
+    working_directory: ~/repo
     steps:
+      - checkout
       # - run:
       #     name: Install dependencies
       #     command: |
