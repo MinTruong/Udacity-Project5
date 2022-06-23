@@ -187,14 +187,6 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       sudo apt-get update && sudo apt-get install -y
-      #       sudo apt-get install -y curl unzip
-      #       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-      #       unzip awscliv2.zip
-      #       sudo ./aws/install
       - run:
           name: Install dependencies
           command: |
@@ -205,21 +197,30 @@ jobs:
             sudo ./aws/install
 
       - run:
+          name: deploy-roles
+          command: |
+            cd .circleci/ansible/CF/
+            echo "----------------------------------------------------check stack"
+            if $(aws cloudformation describe-stacks --stack-name poject5Roles)
+            then
+              echo "had stack poject5Roles"
+            else
+            echo "----------------------------------------------------deploy Network"
+              aws cloudformation deploy --stack-name poject5Roles --template-file roles.yaml --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" --region=us-east-1
+            fi
+      
+      - run:
           name: deploy-infrastructure
           command: |
-            pwd
-            ls -la
-            cd .circleci/ansible/CF/
-            ls -la
             echo "----------------------------------------------------check stack"
-            if $(aws cloudformation describe-stacks --stack-name poject4Network)
+            if $(aws cloudformation describe-stacks --stack-name poject5Cluster)
             then
-                echo "had stack"
+              echo "had stack poject5Cluster"
             else
-                echo "didn't have stack"
+            echo "---------------------------------deploy Network, EKS and Node"
+              aws cloudformation deploy --stack-name infrastructure --template-file infrastructure.yaml --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" --region=us-east-1
             fi
 
-  
   deploy:
     docker:
       - image: cimg/base:stable-20.04

@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: project-4
+  name: project-5
   labels:
-    app: project4
+    app: project5
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: project4
+      app: project5
   template:
     metadata:
       labels:
-        app: project4
+        app: project5
     spec:
       containers:
-      - name: project-4
-        image: 657224673055.dkr.ecr.us-east-1.amazonaws.com/project4:latest
+      - name: project-5
+        image: 657224673055.dkr.ecr.us-east-1.amazonaws.com/project5:latest
         imagePullPolicy: Always
         ports:
           - name: app
