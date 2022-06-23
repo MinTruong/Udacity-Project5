@@ -63,8 +63,9 @@ Resources:
         SecurityGroupIds:
           - !Ref EKsSecGroup
         SubnetIds:
-          - !GetAtt Network.PublicSubnet1
-          - !GetAtt Network.PublicSubnet2
+          - !GetAtt Network.Outputs.PublicSubnet1
+            !GetAtt
+          - !GetAtt Network.Outputs.PublicSubnet2
         EndpointPublicAccess: true
         EndpointPrivateAccess: false
   

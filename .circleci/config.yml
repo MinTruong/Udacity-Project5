@@ -201,7 +201,7 @@ jobs:
           command: |
             cd .circleci/ansible/CF/
             echo "----------------------------------------------------check stack"
-            if $(aws cloudformation describe-stacks --stack-name project5Roles)
+            if [ $(aws cloudformation describe-stacks --stack-name project5Roles --query Stacks[*].StackStatus --output text) == "CREATE_COMPLETE" ]
             then
               echo "had stack project5Roles"
             else
@@ -214,7 +214,7 @@ jobs:
           command: |
             cd .circleci/ansible/CF/
             echo "----------------------------------------------------check stack"
-            if $(aws cloudformation describe-stacks --stack-name project5Cluster)
+            if [ $(aws cloudformation describe-stacks --stack-name project5Cluster --query Stacks[*].StackStatus --output text) == "CREATE_COMPLETE" ]
             then
               echo "had stack project5Cluster"
             else
