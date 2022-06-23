@@ -212,7 +212,7 @@ jobs:
             cd .circleci/ansible/CF/
             ls -la
             echo "----------------------------------------------------check stack"
-            if $(aws cloudformation describe-stacks --stack-name poject5Network)
+            if $(aws cloudformation describe-stacks --stack-name poject4Network)
             then
                 echo "had stack"
             else
