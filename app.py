@@ -9,8 +9,6 @@ from sklearn.preprocessing import StandardScaler
 app = Flask(__name__)
 LOG = create_logger(app)
 LOG.setLevel(logging.INFO)
-logging.basicConfig(filename='output_txt_files/docker_output.txt',level=logging.INFO)
-
 def scale(payload):
     """Scales Payload"""
     

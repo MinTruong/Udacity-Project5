@@ -1,70 +1,4 @@
 version: 2.1
-
-commands:
-  destroy_environment:
-    description: destroy stack when create one of its failed
-    steps:
-      - run:
-          name: Destroy environment
-          when: on_fail
-          command: |
-            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-            aws cloudformation delete-stack \
-              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-            aws cloudformation delete-stack \
-              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
-           
-  # revert_migrations:
-  #   description: Revert the last migration if successfully run in the current workflow.
-  #   steps:
-  #     - attach_workspace:
-  #         at: .
-  #     - run:
-  #         working_directory: ./backend
-  #         name: Revert migrations
-  #         when: on_fail
-  #         command: |
-  #           pwd
-  #           ls -la
-
-  #           if grep -q "has been executed successfully." backend/migrations_dump.txt
-  #           then
-  #             echo "because 3rd-party service down so we use working space to save status as well file "
-  #             cat migrations_dump.txt
-  #           else
-  #             echo Revert migrations
-  #             cd ~/project/backend
-  #             npm install
-  #             ls -la
-  #             npm run migrations:revert
-  #           fi
-      # - save_cache:
-      #     key: backend-build
-      #     paths: 
-      #       - backend/node_modules
-            
-          
-  aws_cli_intsall:
-    steps:
-      - run:
-          name: Install aws-cli
-          command: |
-            sudo apt install curl
-            sudo apt install unzip
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-  aws_configure_credential:
-    steps:
-      - run:
-          name: Create Credential Configuration AWS
-          command: |
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            aws configure set aws_session_token $AWS_SESSION_TOKEN
-            aws configure set region $AWS_DEFAULT_REGION
-
-
 jobs:
   ##################################################################################
   #                           ----Create-Docker-image-----                       #
@@ -116,33 +50,6 @@ jobs:
       #       apt -y update
       #       apt -y install docker-ce
   
-  # build-docker-image:
-  #   docker:
-  #     - image: cimg/go:1.17
-  #   working_directory: ~/repo
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys:
-  #           - v1-dependencies-{{ checksum "requirements.txt" }}
-  #           - v1-dependencies-
-  #     - setup_remote_docker:
-  #         version: 20.10.14
-  #         docker_layer_caching: true
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           echo $AWS_ECR
-            # aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 657224673055.dkr.ecr.us-east-1.amazonaws.com
-            # docker build -t project5 .
-            # docker tag project5:latest $AWS_ECR/project5:latest
-            # docker images
-
-            # #login ECR
-
-            # #pull image
-
-            # docker push $AWS_ECR/project4:latest
 
   build-docker-image:
     docker:
@@ -214,15 +121,6 @@ jobs:
           name: deploy-EKS-Node
           command: |
             cd .circleci/ansible/CF/
-            # echo "----------------------------------------------------check stack network"
-            # if [ $(aws cloudformation describe-stacks --stack-name project5Cluster --query Stacks[*].StackStatus --output text) == "CREATE_COMPLETE" ]
-            # then
-            #   echo "had stack project5Cluster"
-            # else
-            # echo "---------------------------------deploy Network"
-            #   aws cloudformation deploy --stack-name project5Cluster --template-file infrastructure.yaml --parameter-overrides file://parameter.json --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" --region=us-east-1
-            # fi
-
             a=0
             while [ $a -lt 100 ]
             do
@@ -231,7 +129,7 @@ jobs:
                 a=101
                 echo "had stack project5Network"
                 echo "---------------------------------deploy EKS and Node"
-                aws cloudformation deploy --stack-name infrastructure --template-file infrastructure.yaml --parameter-overrides file://parameter.json --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" --region=us-east-1
+                aws cloudformation deploy --stack-name infrastructure --template-file infrastructure.yaml --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" --region=us-east-1
               else
                 a=`expr $a + 1`
                 sleep 6
@@ -245,7 +143,13 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            echo $HOME
+            echo "----------------------------------------------------------------install aws CLI"
+            sudo apt-get update && sudo apt-get install -y
+            sudo apt-get install -y curl unzip
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+
             echo "----------------------------------------------------------------install kubectl"
             curl -o kubectl https://s3.cn-north-1.amazonaws.com.cn/amazon-eks/1.22.6/2022-03-09/bin/linux/amd64/kubectl
             curl -o kubectl.sha256 https://s3.cn-north-1.amazonaws.com.cn/amazon-eks/1.22.6/2022-03-09/bin/linux/amd64/kubectl.sha256
@@ -254,6 +158,7 @@ jobs:
             mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
             echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc 
             kubectl version --short --client
+
             echo "----------------------------------------------------------------install eksctl"
             curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
             sudo mv /tmp/eksctl /usr/local/bin
@@ -262,15 +167,18 @@ jobs:
       - run:
           name: Connection eks
           command: |
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 657224673055.dkr.ecr.us-east-1.amazonaws.com
             aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $AWS_EKS_CLUSTER
-            kubectl get pods --kubeconfig $HOME/.kube/config
+            kubectl get nodes 
             
             #deploy app
-            kubectl apply -f deployment_project5.yaml 
+            # kubectl apply -f deployment_project5.yaml 
+            kubectl get pods 
+            kubectl get svc
           
 workflows:
   default:
     jobs:
       # - build-docker-image
-      # - deploy
-      - deploy-infrastructure
+      - deploy
+      # - deploy-infrastructure

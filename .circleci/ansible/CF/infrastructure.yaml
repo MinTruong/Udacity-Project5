@@ -37,12 +37,12 @@ Resources:
         EndpointPublicAccess: true
         EndpointPrivateAccess: false
   
-  EksNode:
-    EKSNodegroup:
+
+  EKSNodegroup:
     Type: AWS::EKS::Nodegroup
     Properties:
       ClusterName: !Ref EKSCluster
-      NodeRole: !ImportValue EksNodeRole
+      NodeRole: !ImportValue EksNodeRoleArn
       NodegroupName: WorkerNode1
       ScalingConfig:
         MinSize: 2
@@ -52,15 +52,16 @@ Resources:
       #   Key1: Value1
       #   Key2: Value2
       Subnets:
-        - !GetAtt Network.PublicSubnet1
-        - !GetAtt Network.PublicSubnet1
+        - !ImportValue project5-PUB1-SN
+        - !ImportValue project5-PUB2-SN
       AmiType: AL2_x86_64
       CapacityType: ON_DEMAND
       DiskSize: 8
-      InstanceTypes: t3.micro
+      InstanceTypes: [t3.micro]
       RemoteAccess: 
-        Ec2SshKey: udacity
-        SourceSecurityGroups: !Ref EKsNodeSecGroup
+        Ec2SshKey: "udacity"
+        SourceSecurityGroups: [!Ref EKsNodeSecGroup]
+          
   
   EKsSecGroup:
     Type: AWS::EC2::SecurityGroup
