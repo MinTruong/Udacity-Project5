@@ -183,6 +183,8 @@ jobs:
 
   deploy-infrastructure:
     docker:
+      - checkout
+      - working_directory: ~/repo
       - image: cimg/base:stable-20.04
     steps:
       # - run:
