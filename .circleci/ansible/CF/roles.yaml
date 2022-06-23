@@ -37,5 +37,12 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
         - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
         - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
-        
+
+Outputs:
+
+EksClusterRoleArn:
+  Description: Role EKS arn
+  Value: !GetAtt EksClusterRole.Arn
+  Export:
+    Name: EksClusterRoleArn
 
