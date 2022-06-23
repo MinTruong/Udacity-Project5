@@ -41,7 +41,7 @@ Resources:
   Network:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: network.yaml
+      TemplateURL: /network.yaml
       Parameters:
         EnvironmentName: !Ref EnvironmentName
         VpcCIDR: !Ref VpcCIDR
