@@ -212,6 +212,7 @@ jobs:
       - run:
           name: deploy-infrastructure
           command: |
+            cd .circleci/ansible/CF/
             echo "----------------------------------------------------check stack"
             if $(aws cloudformation describe-stacks --stack-name project5Cluster)
             then
