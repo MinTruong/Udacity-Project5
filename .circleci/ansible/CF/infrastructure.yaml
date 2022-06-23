@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Deploy ERC, ESK
+
+Parameters:
+  EnvironmentName: 
+    Type: String
+    Default: project5
+Resources:
+  # EcrRepo:
+  #   Type: AWS::ECR::Repository
+  #     Properties: 
+  # EncryptionConfiguration: 
+  #   EncryptionConfiguration
+  # ImageScanningConfiguration: 
+  #   ImageScanningConfiguration
+  # ImageTagMutability: String
+  # LifecyclePolicy: 
+  #   LifecyclePolicy
+  # RepositoryName: String
+  # RepositoryPolicyText: Json
+  # Tags: 
+  #   - Tag
+
+  EKSCluster:
+    Type: AWS::EKS::Cluster
+    Properties:
+      Name: Prod
+      Version: "1.22"
+      RoleArn: !ImportValue EksClusterRoleArn
+      KubernetesNetworkConfig:
+        IpFamily: ipv4
+        ServiceIpv4Cidr: 192.168.10.0/24
+      ResourcesVpcConfig:
+        SecurityGroupIds:
+          - !Ref EKsSecGroup
+        SubnetIds:
+          - !ImportValue project5-PUB1-SN
+          - !ImportValue project5-PUB2-SN
+        EndpointPublicAccess: true
+        EndpointPrivateAccess: false
+  
+  EksNode:
+    EKSNodegroup:
+    Type: AWS::EKS::Nodegroup
+    Properties:
+      ClusterName: !Ref EKSCluster
+      NodeRole: !ImportValue EksNodeRole
+      NodegroupName: WorkerNode1
+      ScalingConfig:
+        MinSize: 2
+        DesiredSize: 2
+        MaxSize: 3
+      # Labels:
+      #   Key1: Value1
+      #   Key2: Value2
+      Subnets:
+        - !ImportValue project5-PUB1-SN
+        - !ImportValue project5-PUB2-SN
+      AmiType: AL2_x86_64
+      CapacityType: ON_DEMAND
+      DiskSize: 8
+      InstanceTypes: t3.micro
+      RemoteAccess: 
+        Ec2SshKey: udacity
+        SourceSecurityGroups: !Ref EKsNodeSecGroup
+  
+  EKsSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to our hosts and SSH from local only
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${EnvironmentName}-VPCID"
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        IpProtocol: "-1"
+  
+  EKsNodeSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: EKsNodeSecGroup Allow http to our hosts and SSH from local only
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${EnvironmentName}-VPCID"
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        IpProtocol: "-1"
+
