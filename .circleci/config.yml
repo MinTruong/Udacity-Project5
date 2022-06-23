@@ -200,15 +200,9 @@ jobs:
           name: deploy-roles
           command: |
             cd .circleci/ansible/CF/
-            echo "----------------------------------------------------check stack"
-            if [ $(aws cloudformation describe-stacks --stack-name project5Roles --query Stacks[*].StackStatus --output text) == "CREATE_COMPLETE" ]
-            then
-              echo "had stack project5Roles"
-            else
             echo "----------------------------------------------------deploy Network"
-              aws cloudformation deploy --stack-name project5Roles --template-file roles.yaml --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" --region=us-east-1
-            fi
-      
+            aws cloudformation deploy --stack-name project5Roles --template-file roles.yaml --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" --region=us-east-1
+            
       - run:
           name: deploy-infrastructure
           command: |
