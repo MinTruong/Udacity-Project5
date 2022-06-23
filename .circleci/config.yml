@@ -180,6 +180,26 @@ jobs:
           command: |
             #pull image
             docker push $AWS_ECR/project5:latest
+
+  deploy-infrastructure:
+    docker:
+      - image: cimg/base:stable-20.04
+    steps:
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       sudo apt-get update && sudo apt-get install -y
+      #       sudo apt-get install -y curl unzip
+      #       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      #       unzip awscliv2.zip
+      #       sudo ./aws/install
+      - run:
+          name: deploy-infrastructure
+          command: |
+            pwd
+            cd .circleci/ansible/CF/
+            pwd
+
   
   deploy:
     docker:
@@ -189,6 +209,7 @@ jobs:
           name: Install dependencies
           command: |
             echo $HOME
+            echo "----------------------------------------------------------------install kubectl"
             curl -o kubectl https://s3.cn-north-1.amazonaws.com.cn/amazon-eks/1.22.6/2022-03-09/bin/linux/amd64/kubectl
             curl -o kubectl.sha256 https://s3.cn-north-1.amazonaws.com.cn/amazon-eks/1.22.6/2022-03-09/bin/linux/amd64/kubectl.sha256
             openssl sha1 -sha256 kubectl
@@ -196,10 +217,23 @@ jobs:
             mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
             echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc 
             kubectl version --short --client
+            echo "----------------------------------------------------------------install eksctl"
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            sudo mv /tmp/eksctl /usr/local/bin
+            eksctl version    
             
+      - run:
+          name: Connection eks
+          command: |
+            aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $AWS_EKS_CLUSTER
+            kubectl get pods --kubeconfig $HOME/.kube/config
+            
+            #deploy app
+            kubectl apply -f deployment_project5.yaml 
           
 workflows:
   default:
     jobs:
       # - build-docker-image
-      - deploy
+      # - deploy
+      - deploy-infrastructure
