@@ -101,7 +101,7 @@ Resources:
       SecurityGroupIngress:
       - CidrIp: 0.0.0.0/0
         IpProtocol: "-1"
-  
+
   # EKsNodeSecGroup:
   #   Type: AWS::EC2::SecurityGroup
   #   Properties:
