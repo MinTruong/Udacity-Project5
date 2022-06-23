@@ -1,25 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Deploy ERC, ESK
 
-Parameters:
-  EnvironmentName:
-    Description: An environment name that will be prefixed to resource names
-    Type: String
-  VpcCIDR: 
-      Description: Please enter the IP range (CIDR notation) for this VPC
-      Type: String
-  PublicSubnet1CIDR:
-      Description: Please enter the IP range (CIDR notation) for the public subnet in the first Availability Zone
-      Type: String
-  PublicSubnet2CIDR:
-      Description: Please enter the IP range (CIDR notation) for the public subnet in the second Availability Zone
-      Type: String
-  PrivateSubnet1CIDR:
-      Description: Please enter the IP range (CIDR notation) for the private subnet in the first Availability Zone
-      Type: String
-  PrivateSubnet2CIDR:
-      Description: Please enter the IP range (CIDR notation) for the private subnet in the second Availability Zone
-      Type: String
 
 
 Resources:
@@ -38,18 +19,6 @@ Resources:
   # Tags: 
   #   - Tag
 
-  Network:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: /network.yaml
-      Parameters:
-        EnvironmentName: !Ref EnvironmentName
-        VpcCIDR: !Ref VpcCIDR
-        PublicSubnet1CIDR: !Ref PublicSubnet1CIDR
-        PublicSubnet2CIDR: !Ref PublicSubnet2CIDR
-        PrivateSubnet1CIDR: !Ref PrivateSubnet1CIDR
-        PrivateSubnet2CIDR: !Ref PrivateSubnet2CIDR
-
   EKSCluster:
     Type: AWS::EKS::Cluster
     Properties:
@@ -63,53 +32,51 @@ Resources:
         SecurityGroupIds:
           - !Ref EKsSecGroup
         SubnetIds:
-          - !GetAtt Network.Outputs.PublicSubnet1
-          - !GetAtt Network.Outputs.PublicSubnet2
+          - !ImportValue project5-PUB1-SN
+          - !ImportValue project5-PUB2-SN
         EndpointPublicAccess: true
         EndpointPrivateAccess: false
   
-  # EksNode:
-  #   EKSNodegroup:
-  #   Type: AWS::EKS::Nodegroup
-  #   Properties:
-  #     ClusterName: !Ref EKSCluster
-  #     NodeRole: !ImportValue EksNodeRole
-  #     NodegroupName: WorkerNode1
-  #     ScalingConfig:
-  #       MinSize: 2
-  #       DesiredSize: 2
-  #       MaxSize: 3
-  #     # Labels:
-  #     #   Key1: Value1
-  #     #   Key2: Value2
-  #     Subnets:
-  #       - !GetAtt Network.PublicSubnet1
-  #       - !GetAtt Network.PublicSubnet1
-  #     AmiType: AL2_x86_64
-  #     CapacityType: ON_DEMAND
-  #     DiskSize: 8
-  #     InstanceTypes: t3.micro
-  #     RemoteAccess: 
-  #       Ec2SshKey: udacity
-  #       SourceSecurityGroups: !Ref EKsNodeSecGroup
+  EksNode:
+    EKSNodegroup:
+    Type: AWS::EKS::Nodegroup
+    Properties:
+      ClusterName: !Ref EKSCluster
+      NodeRole: !ImportValue EksNodeRole
+      NodegroupName: WorkerNode1
+      ScalingConfig:
+        MinSize: 2
+        DesiredSize: 2
+        MaxSize: 3
+      # Labels:
+      #   Key1: Value1
+      #   Key2: Value2
+      Subnets:
+        - !GetAtt Network.PublicSubnet1
+        - !GetAtt Network.PublicSubnet1
+      AmiType: AL2_x86_64
+      CapacityType: ON_DEMAND
+      DiskSize: 8
+      InstanceTypes: t3.micro
+      RemoteAccess: 
+        Ec2SshKey: udacity
+        SourceSecurityGroups: !Ref EKsNodeSecGroup
   
   EKsSecGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allow http to our hosts and SSH from local only
-      VpcId: !GetAtt Network.Outputs.VPC
+      VpcId: !ImportValue  project5-VPCID
       SecurityGroupIngress:
       - CidrIp: 0.0.0.0/0
         IpProtocol: "-1"
 
-  # EKsNodeSecGroup:
-  #   Type: AWS::EC2::SecurityGroup
-  #   Properties:
-  #     GroupDescription: EKsNodeSecGroup Allow http to our hosts and SSH from local only
-  #     VpcId:
-  #       Fn::ImportValue:
-  #         !Sub "${EnvironmentName}-VPCID"
-  #     SecurityGroupIngress:
-  #     - CidrIp: 0.0.0.0/0
-  #       IpProtocol: "-1"
+  EKsNodeSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: EKsNodeSecGroup Allow http to our hosts and SSH from local only
+      VpcId: !ImportValue  project5-VPCID
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        IpProtocol: "-1"
 

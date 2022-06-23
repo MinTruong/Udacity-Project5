@@ -202,19 +202,41 @@ jobs:
             cd .circleci/ansible/CF/
             echo "----------------------------------------------------deploy Network"
             aws cloudformation deploy --stack-name project5Roles --template-file roles.yaml --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" --region=us-east-1
-            
+      
       - run:
-          name: deploy-infrastructure
+          name: deploy-network
           command: |
             cd .circleci/ansible/CF/
-            echo "----------------------------------------------------check stack"
-            if [ $(aws cloudformation describe-stacks --stack-name project5Cluster --query Stacks[*].StackStatus --output text) == "CREATE_COMPLETE" ]
-            then
-              echo "had stack project5Cluster"
-            else
-            echo "---------------------------------deploy Network, EKS and Node"
-              aws cloudformation deploy --stack-name infrastructure --template-file infrastructure.yaml --parameter-overrides file://parameter.json --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" --region=us-east-1
-            fi
+            echo "----------------------------------------------------deploy Network"
+            aws cloudformation deploy --stack-name project5Network --template-file network.yaml --parameter-overrides file://parameter.json --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" --region=us-east-1
+
+      - run:
+          name: deploy-EKS-Node
+          command: |
+            cd .circleci/ansible/CF/
+            # echo "----------------------------------------------------check stack network"
+            # if [ $(aws cloudformation describe-stacks --stack-name project5Cluster --query Stacks[*].StackStatus --output text) == "CREATE_COMPLETE" ]
+            # then
+            #   echo "had stack project5Cluster"
+            # else
+            # echo "---------------------------------deploy Network"
+            #   aws cloudformation deploy --stack-name project5Cluster --template-file infrastructure.yaml --parameter-overrides file://parameter.json --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" --region=us-east-1
+            # fi
+
+            a=0
+            while [ $a -lt 100 ]
+            do
+              if [ $(aws cloudformation describe-stacks --stack-name project5Network --query Stacks[*].StackStatus --output text) == "CREATE_COMPLETE" ]
+              then
+                a=101
+                echo "had stack project5Network"
+                echo "---------------------------------deploy EKS and Node"
+                aws cloudformation deploy --stack-name infrastructure --template-file infrastructure.yaml --parameter-overrides file://parameter.json --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" --region=us-east-1
+              else
+                a=`expr $a + 1`
+                sleep 6
+              fi
+            done
 
   deploy:
     docker:
