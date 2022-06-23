@@ -202,7 +202,13 @@ jobs:
             ls -la
             cd .circleci/ansible/CF/
             ls -la
-            pwd
+            echo "----------------------------------------------------check stack"
+            if $(aws cloudformation describe-stacks --stack-name poject4Networke)
+            then
+                echo "had stack"
+            else
+                echo "did'nt had stack"
+            fi
 
   
   deploy:
