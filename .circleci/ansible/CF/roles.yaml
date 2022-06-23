@@ -44,4 +44,10 @@ Outputs:
     Value: !GetAtt EksClusterRole.Arn
     Export:
       Name: EksClusterRoleArn
+  
+  EksNodeRoleARn:
+    Description: Role deploy Node in Cluster
+    Value: !GetAtt EksNodeRole.Arn
+    Export:
+      Name: EksNodeRoleArn
 
