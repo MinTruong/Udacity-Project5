@@ -165,14 +165,22 @@ jobs:
             eksctl version    
             
       - run:
-          name: Connection eks
+          name: deploy-app
           command: |
+            echo "----------------------------------------------------------------list out file in repo"
+            ls -la
+
+            echo "----------------------------------------------------------------connect to ECR and push image"
             aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ECR
-            aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $AWS_EKS_CLUSTER
-            kubectl get nodes 
+            docker pull $AWS_ECR/project5:latest
+            docker images
             
-            #deploy app
-            # kubectl apply -f deployment_project5.yaml 
+            echo "----------------------------------------------------------------remote cluster EKS"
+            aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $AWS_EKS_CLUSTER
+
+            echo "----------------------------------------------------------------deploy app"
+            kubectl apply -f deployment_project5.yaml 
+            kubectl get nodes 
             kubectl get pods 
             kubectl get svc
           
