@@ -14,26 +14,26 @@ jobs:
           keys:
           - v1-dependencies-{{ checksum "requirements.txt" }}
           - v1-dependencies-
-      # - run:
-      #     name: install dependencies
-      #     command: |
-      #       pwd
-      #       python3 -m venv project5
-      #       . project5/bin/activate
-      #       make install
-      #       # Install hadolint
-      #       wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
-      #       chmod +x /bin/hadolint
-      # - save_cache:
-      #     paths:
-      #       - ./venv
-      #     key: v1-dependencies-{{ checksum "requirements.txt" }}
-      # - run:
-      #     name: run lint
-      #     command: |
-      #       . project5/bin/activate
-      #       make lint 
-      #       ls -la
+      - run:
+          name: install dependencies
+          command: |
+            pwd
+            python3 -m venv project5
+            . project5/bin/activate
+            make install
+            # Install hadolint
+            wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
+            chmod +x /bin/hadolint
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+      - run:
+          name: run lint
+          command: |
+            . project5/bin/activate
+            make lint 
+            ls -la
       # - run:
       #     name: update
       #     command: |
@@ -179,6 +179,12 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-docker-image
-      - deploy
-      # - deploy-infrastructure
+      - test-code-build
+      - deploy-infrastructure
+      - build-docker-image:
+          requires:
+            - test-code-build
+      - deploy:
+          requires:
+            - test-code-build
+            - deploy-infrastructure
