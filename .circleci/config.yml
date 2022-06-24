@@ -63,7 +63,7 @@ jobs:
             - v1-dependencies-
       - setup_remote_docker:
           version: 20.10.14
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Install dependencies
           command: |
@@ -140,7 +140,7 @@ jobs:
     docker:
       - image: cimg/base:stable-20.04
     
-    # working_directory: ~/repo
+    working_directory: ~/repo
     steps:
       - checkout
       - run:
@@ -176,11 +176,11 @@ jobs:
             echo "----------------------------------------------------------------list out file in repo"
             ls -la
 
-            # echo "----------------------------------------------------------------connect to ECR and push image"
-            # aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_EC
-            # docker images
-            # docker pull $AWS_ECR/project5:latest
-            # docker images
+            echo "----------------------------------------------------------------connect to ECR and push image"
+            aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_EC
+            docker images
+            docker pull $AWS_ECR/project5:latest
+            docker images
             
             # echo "----------------------------------------------------------------remote cluster EKS"
             # aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $AWS_EKS_CLUSTER
