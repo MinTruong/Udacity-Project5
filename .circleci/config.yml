@@ -163,7 +163,10 @@ jobs:
             curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
             sudo mv /tmp/eksctl /usr/local/bin
             eksctl version    
-            
+      
+      - setup_remote_docker:
+          version: 20.10.14
+          docker_layer_caching: true
       - run:
           name: deploy-app
           command: |
@@ -173,7 +176,6 @@ jobs:
             echo "----------------------------------------------------------------connect to ECR and push image"
             aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ECR
             docker pull $AWS_ECR/project5:latest
-            chmod 666 /var/run/docker.sock
             docker images
             
             echo "----------------------------------------------------------------remote cluster EKS"
