@@ -173,8 +173,8 @@ jobs:
       - run:
           name: deploy-app
           command: |
-            # echo "----------------------------------------------------------------list out file in repo"
-            # ls -la
+            echo "----------------------------------------------------------------list out file in repo"
+            ls -la
 
             # echo "----------------------------------------------------------------connect to ECR and push image"
             # aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_EC
@@ -191,8 +191,6 @@ jobs:
             # kubectl get pods 
             # kubectl get svc
 
-            docker images
-            docker rmi $(docker images -a | grep $AWS_ECR)
             docker images
           
 workflows:
