@@ -178,21 +178,18 @@ jobs:
 
             echo "----------------------------------------------------------------connect to ECR and push image"
             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 657224673055.dkr.ecr.us-east-1.amazonaws.com
-            docker images
             docker pull $AWS_ECR/project5:latest
             docker images
             
-            # echo "----------------------------------------------------------------remote cluster EKS"
-            # aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $AWS_EKS_CLUSTER
+            echo "----------------------------------------------------------------remote cluster EKS"
+            aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $AWS_EKS_CLUSTER
 
-            # echo "----------------------------------------------------------------deploy app"
-            # kubectl apply -f deployment_project5.yaml 
-            # kubectl get nodes 
-            # kubectl get pods 
-            # kubectl get svc
-
-            docker images
-          
+            echo "----------------------------------------------------------------deploy app"
+            kubectl apply -f deployment_project5.yaml 
+            kubectl get nodes 
+            kubectl get pods 
+            kubectl get svc
+  
 workflows:
   default:
     jobs:
@@ -206,6 +203,6 @@ workflows:
       #       - build-docker-image
       #       - deploy-infrastructure
       
-      - build-docker-image
-      - deploy:
-          requires: [build-docker-image]
+      
+      - deploy
+          
