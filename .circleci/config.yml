@@ -205,5 +205,7 @@ workflows:
       #     requires:
       #       - build-docker-image
       #       - deploy-infrastructure
-
-      - deploy
+      
+      - build-docker-image
+      - deploy:
+          requires: build-docker-image
