@@ -173,24 +173,27 @@ jobs:
       - run:
           name: deploy-app
           command: |
-            echo "----------------------------------------------------------------list out file in repo"
-            ls -la
+            # echo "----------------------------------------------------------------list out file in repo"
+            # ls -la
 
-            echo "----------------------------------------------------------------connect to ECR and push image"
-            aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ECR
-            docker rmi $AWS_ECR/*
-            docker images
-            docker pull $AWS_ECR/project5:latest
-            docker images
+            # echo "----------------------------------------------------------------connect to ECR and push image"
+            # aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_EC
+            # docker images
+            # docker pull $AWS_ECR/project5:latest
+            # docker images
             
-            echo "----------------------------------------------------------------remote cluster EKS"
-            aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $AWS_EKS_CLUSTER
+            # echo "----------------------------------------------------------------remote cluster EKS"
+            # aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $AWS_EKS_CLUSTER
 
-            echo "----------------------------------------------------------------deploy app"
+            # echo "----------------------------------------------------------------deploy app"
             # kubectl apply -f deployment_project5.yaml 
             # kubectl get nodes 
             # kubectl get pods 
             # kubectl get svc
+
+            docker images
+            docker rmi $(docker images -a | grep $AWS_ECR)
+            docker images
           
 workflows:
   default:
