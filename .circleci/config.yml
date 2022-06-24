@@ -185,7 +185,7 @@ jobs:
             aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $AWS_EKS_CLUSTER
 
             echo "----------------------------------------------------------------deploy app"
-            sudo chmod 666 run_kubernetes.sh
+            sudo chmod 777 run_kubernetes.sh
             ls -la
             ./run_kubernetes.sh
             echo "--------------------wait 30s for deployment pod-----------------------------"
