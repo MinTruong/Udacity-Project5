@@ -185,7 +185,10 @@ jobs:
             aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $AWS_EKS_CLUSTER
 
             echo "----------------------------------------------------------------deploy app"
-            kubectl apply -f deployment_project5.yaml 
+            chmod 666 run_kubernetes.sh
+            ./run_kubernetes.sh
+            echo "--------------------wait 30s for deployment pod-----------------------------"
+            sleep 30
 
             echo "-----------------------------get node---------------------------------------"
             kubectl get nodes 
@@ -212,6 +215,8 @@ workflows:
       #       - build-docker-image
       #       - deploy-infrastructure
       
-      - build-docker-image
-      - deploy:
-          requires: [build-docker-image]
+      # - build-docker-image
+      # - deploy:
+      #     requires: [build-docker-image]
+
+      - deploy
