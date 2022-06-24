@@ -196,7 +196,7 @@ jobs:
             echo "-----------------------------get pods---------------------------------------"
             kubectl get pods 
 
-            echo "-----------------------------get svc---------------------------------------"
+            echo "-----------------------------get node---------------------------------------"
             kubectl get svc
   
 workflows:
@@ -207,9 +207,11 @@ workflows:
       # - build-docker-image:
       #     requires:
       #       - test-code-build
-      - deploy:
-          requires:
-            - build-docker-image
-            - deploy-infrastructure
+      # - deploy:
+      #     requires:
+      #       - build-docker-image
+      #       - deploy-infrastructure
       
-          
+      - build-docker-image
+      - deploy:
+          requires: [build-docker-image]
