@@ -173,6 +173,7 @@ jobs:
             echo "----------------------------------------------------------------connect to ECR and push image"
             aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ECR
             docker pull $AWS_ECR/project5:latest
+            chmod 666 /var/run/docker.sock
             docker images
             
             echo "----------------------------------------------------------------remote cluster EKS"
