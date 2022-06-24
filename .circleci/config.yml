@@ -186,8 +186,17 @@ jobs:
 
             echo "----------------------------------------------------------------deploy app"
             kubectl apply -f deployment_project5.yaml 
+
+            echo "-----------------------------get node---------------------------------------"
             kubectl get nodes 
+
+            echo "--------------------------get deployment------------------------------------"
+            kubectl get deployment
+
+            echo "-----------------------------get pods---------------------------------------"
             kubectl get pods 
+
+            echo "-----------------------------get svc---------------------------------------"
             kubectl get svc
   
 workflows:
@@ -198,11 +207,9 @@ workflows:
       # - build-docker-image:
       #     requires:
       #       - test-code-build
-      # - deploy:
-      #     requires:
-      #       - build-docker-image
-      #       - deploy-infrastructure
+      - deploy:
+          requires:
+            - build-docker-image
+            - deploy-infrastructure
       
-      
-      - deploy
           
