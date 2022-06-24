@@ -208,4 +208,4 @@ workflows:
       
       - build-docker-image
       - deploy:
-          requires: build-docker-image
+          requires: [runbuild-docker-image]
