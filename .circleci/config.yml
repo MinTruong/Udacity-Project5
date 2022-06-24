@@ -140,7 +140,7 @@ jobs:
     docker:
       - image: cimg/base:stable-20.04
     
-    working_directory: ~/repo
+    # working_directory: ~/repo
     steps:
       - checkout
       - run:
@@ -169,7 +169,7 @@ jobs:
       
       - setup_remote_docker:
           version: 20.10.14
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: deploy-app
           command: |
