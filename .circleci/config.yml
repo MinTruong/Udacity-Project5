@@ -177,7 +177,7 @@ jobs:
             ls -la
 
             echo "----------------------------------------------------------------connect to ECR and push image"
-            aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_EC
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 657224673055.dkr.ecr.us-east-1.amazonaws.com
             docker images
             docker pull $AWS_ECR/project5:latest
             docker images
